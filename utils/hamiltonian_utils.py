@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm_notebook
 import pickle
+import editdistance as ed
 
 class Component:
     def __init__(self):
@@ -195,6 +196,44 @@ def solve_gready(inp_gr):
 def split(chain, weights):
     splits = np.where(weights == 0)[0] 
     return np.split(chain, splits + 1), np.split(weights, splits)
+
+
+def search_best_alignment(a, b, t = 2):
+    answ = ('', '')
+    indexes = (-1,-1,-1,-1)
+    b_index = -1
+    
+    for i, x in enumerate(b):
+        curr_answ, curr_indexes = best_alignment(a, x, t)
+        if len(curr_answ[0]) >= len(answ[0]) and len(curr_answ[1]) >= len(answ[1]):
+            answ = curr_answ
+            indexes = curr_indexes
+            b_index = i
+        curr_answ, curr_indexes = best_alignment(a[::-1], x, t)
+        if len(curr_answ[0]) >= len(answ[0]) and len(curr_answ[1]) >= len(answ[1]):
+            answ = curr_answ
+            indexes = curr_indexes
+            b_index = i
+        
+    return answ, b_index, indexes
+
+
+def best_alignment(a, b, t):
+    '''worst implementation of best alignment ever'''
+    answ = ('','')
+    i1a, i2a, j1a, j2a = -1,-1,-1,-1
+    for i1 in range(0, len(a)):
+        for i2 in range(i1 + 1, len(a) + 1):
+            check_a = a[i1:i2]
+            for j1 in range(0, len(b)):
+                for j2 in range(j1 + 1,  len(b) + 1):
+                    check_b = b[j1:j2]
+                    if ed.eval(check_a, check_b) <= t and len(check_a) >= len(answ[0]) and len(check_b) >= len(answ[1]):
+                        answ = (check_a, check_b)
+                        i1a, i2a, j1a, j2a = i1,i2,j1,j2
+    
+    return answ, (i1a,i2a,j1a,j2a)
+
     
 
 
