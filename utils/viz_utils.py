@@ -31,11 +31,27 @@ def add_pos(arr, pos):
     
     return pos
 
+def gr_to_pairs(adj):
+    pairs = []
+    a, b = np.where(adj == 1)
+    for p in zip(a,b):
+        pairs.append((p[0], p[1]))
+    return pairs
+
+
 def arrays_to_gr(arrays):
     G = nx.DiGraph()
     for arr in arrays:
         G.add_path(arr)
     return G
+
+def adj_to_gr(adj):
+    G = nx.DiGraph()
+    a, b = np.where(adj == 1)
+    for p in zip(a,b):
+        G.add_edge(p[0], p[1])
+    return G
+
 
 def plot_graphs(*gr, figsize=(15, 10), colors = ['r', 'g', 'y', 'b'], node_size=20):
     f = plt.figure(figsize=figsize)
