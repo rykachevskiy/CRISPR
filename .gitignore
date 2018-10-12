@@ -8,6 +8,8 @@ node_modules
 *.swp
 
 
+*.zip
+
 
 env.sh
 # Byte-compiled / optimized / DLL files
@@ -75,6 +77,16 @@ debian/files
 *.substvars
 *.debhelper.log
 
+
+# tf_logs
+tf_logs/
+
+# 
+node2vec
+
+#checkpoints
+src/.ipynb_checkpoints/
+
 # Directory with trained models
 trained_models/
 
@@ -83,3 +95,4 @@ ext_libs/
 
 idea/
 .ipynb_checkpoints/
+
