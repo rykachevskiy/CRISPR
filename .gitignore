@@ -6,7 +6,7 @@ node_modules
 # swap files
 *~
 *.swp
-
+.~lock*
 
 *.zip
 
