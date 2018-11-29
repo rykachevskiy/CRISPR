@@ -50,9 +50,12 @@ def squash(od, t, verbose =False):
     return answ, sp_to_n
 
 
-def parse_pairs(path, n = 50):
+def parse_pairs(path, split = '\t', n = 50):
     with open(path) as f:
-        pairs = [[y[:n] for y in x[:-2].split(' ') ] for x in f.readlines()]
+        pairs = [[y[:n] for y in x[:-2].split(split) ] for x in f.readlines()]
+        
+    pairs = [x for x in pairs if len(x) > 1]
+    pairs = [x for x in pairs if len(x[0]) > 25 and len(x[1]) > 25]
     
     lines = []
     for p in pairs:
@@ -103,22 +106,47 @@ def process_pair(pair, cl_to_n, t = 6):
         return [cl_to_n[find_closest(cl_to_n, pair[0])[1]], cl_to_n[find_closest(cl_to_n, pair[1])[1]]]
     except:
         return [-1, -1]
+    
+def process_pair_t(tup):
+    try:
+        return [tup[1][find_closest(tup[1], tup[0][0])[1]], tup[1][find_closest(tup[1], tup[0][1])[1]]]
+    except:
+        return [-1, -1]
+    
+def process_batch(batch, cl_to_n):
+    return [process_pair(p, cl_to_n) for p in batch]
 
+    
+def _copy_gen(x, n):
+    for i in range(n):
+        yield x
 
-def graph_from_raw(path, t = 50, v=1):
+def graph_from_raw(path, split = ' ', t = 50, v=1, n_jobs=4, mp =1, cut = None):
     if v: print("reading pairs, clustering...")
-    pairs, lines = parse_pairs(path, t)
+    pairs, lines = parse_pairs(path,split, t)
     ord_dict = lines_to_ordered_dict(lines)
     
     if v: print("making sp_to_n...")
     nd, sp_to_n, cl_to_n, n_to_cl = get_cl_n(ord_dict)
     
     if v: print("processing pairs...")
-    pairs_n = [process_pair(p, cl_to_n) for p in tqdm_notebook(pairs)]
-    
+
+    if not cut is None:
+        pairs = pairs[:cutl]
+        
+    if mp:
+        from multiprocessing import Pool
+        with Pool(n_jobs) as pool:
+            print("Using {} jobs".format(n_jobs))
+
+            batches = np.array_split(pairs, n_jobs)
+            batches_list = list(tqdm_notebook(pool.starmap(process_batch, zip(batches, _copy_gen(cl_to_n, n_jobs))), total = n_jobs))
+            pairs_n = [x for y in batches_list for x in y]
+    else:
+        pairs_n = [process_pair(p, cl_to_n) for p in tqdm_notebook(pairs)]
+        
     if v: print("making graph...")
     graph = np.zeros((len(cl_to_n),len(cl_to_n)))
-
     err = 0
     for p in pairs_n:
         if len(p) == 2 and sum(p) != -2:
