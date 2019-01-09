@@ -1,0 +1,5 @@
+{                                 
+  "path":"/home/anton/BigMac/skoltech/CRISPR_research/data/Run28/check/",
+  "primer":"/home/anton/BigMac/skoltech/CRISPR_research/data/primers/primers_ecoli.txt",
+  "spget":"/home/anton/BigMac/skoltech/CRISPR_research/spget/spget.py"
+}  

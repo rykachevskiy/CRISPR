@@ -1,5 +1,5 @@
 {                                 
-  "path":"/home/anton/BigMac/skoltech/CRISPR_research/data/cdif_11_12/",
+  "path":"/home/anton/BigMac/skoltech/CRISPR_research/data/cdif_11_12_bc/",
   "primer":"/home/anton/BigMac/skoltech/CRISPR_research/data/primers/primers_clostr.txt",
   "spget":"/home/anton/BigMac/skoltech/CRISPR_research/spget-my/spget.py"
 }  

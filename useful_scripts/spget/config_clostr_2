@@ -1,5 +1,5 @@
 {                                 
-  "path":"/home/anton/BigMac/skoltech/CRISPR_research/data/clostr_11_12/",
+  "path":"/home/anton/BigMac/skoltech/CRISPR_research/data/Run28/",
   "primer":"/home/anton/BigMac/skoltech/CRISPR_research/data/primers/primers_clostr.txt",
   "spget":"/home/anton/BigMac/skoltech/CRISPR_research/spget-my/spget.py"
 }  
