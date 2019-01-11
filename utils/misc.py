@@ -1,8 +1,9 @@
-from tqdm import tqdm_notebook
+from tqdm import tqdm
 from multiprocessing import Pool
 import numpy as np
 import regex as re
 import crispr_assembler as ca
+
 
 def extract_read_bc(read, pattern, search_rc=0):
     coords = [x.span() for x in re.finditer(pattern, read)]
@@ -25,7 +26,7 @@ def extract_read_bc(read, pattern, search_rc=0):
 
 def process_batch(batch, pattern):
     reads_clusterised = {}
-    for r in tqdm_notebook(batch):
+    for r in tqdm(batch):
         bc, r_cut, r, inv = extract_read_bc(r, pattern, search_rc=1)
         if bc != -1:
             if bc in reads_clusterised:
@@ -61,10 +62,36 @@ def split_read_rc(read, repeat, quality=None):
     spacers = ca.split_read(ca.rc(read, r=1), quality, ca.redundant)#.reverse_complementary())
     inv = 0
     if spacers[0] == -1 or spacers[1] == -1:
+        print("searching inverse")
         spacers = ca.split_read(read, quality, ca.redundant)#.reverse_complementary())
         inv = 1
 
     if spacers[0] == -1 or spacers[1] == -1:
-        return -1,-1,-1
+        return (-1,-1), -1
     else:
-        
+        if inv:
+            return [ca.rc(x, r=1) for x in spacers][::-1], inv
+        else:
+            return spacers, inv
+
+
+# def mp_list_killer(f, )
+# reads, quals = ca.read_fastq(args.filename)
+# if DEBUG: print(len(reads))
+#
+# def process_batch_mp(batch):
+#     return process_batch(batch, p_cut)
+#
+# reads_batches = [reads[idxs[0]: idxs[1]] for idxs in get_splits(len(reads), args.workers)]
+#
+# if DEBUG: print([len(x) for x in reads_batches])
+#
+# reads_bc_list = mp_map(process_batch_mp, reads_batches, args.workers)
+#
+# reads_bc = {}
+# for reads_bc_batch in reads_bc_list:
+#     for k,v in reads_bc_batch.items():
+#         if k in reads_bc:
+#             reads_bc[k] += v
+#         else:
+#             reads_bc[k] = v
