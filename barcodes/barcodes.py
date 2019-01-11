@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import sys
+import os
+
 from importlib import reload
 import regex as re
 import pickle
@@ -66,6 +68,10 @@ if __name__ == '__main__':
 
     if DEBUG: print(len(reads_bc))
     if DEBUG: print(reads_bc)
+
+
+    if not os.path.exists(args.save_path):
+        os.makedirs(args.save_path)
 
     pickle.dump(reads_bc, open(args.save_path + "/reads_bc", 'wb'))
     #
