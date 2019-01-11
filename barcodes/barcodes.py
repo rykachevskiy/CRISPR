@@ -14,7 +14,7 @@ from misc import *
 #from ..utils.misc import *
 
 
-DEBUG = 1
+DEBUG = 0
 
 m1s = 'AAGCAGTGGTATCAACGCAGAGT'
 p = re.compile('(?:' + m1s + '){e<=2}')
@@ -31,39 +31,43 @@ if __name__ == '__main__':
     parser.add_argument('--reads_bc_path', dest='reads_bc_path', default=None)
     parser.add_argument('--workers', dest='workers', type=int, default=6)
     parser.add_argument('--save_path', dest='save_path')
+    parser.add_argument('--b_type', dest='bacteria_type', default='c')
 
-    args = parser.parse_args()
+    #args = parser.parse_args()
+    args = parser.parse_args(['--fn',
+                              "/home/anton/BigMac/skoltech/CRISPR_research/data/cdif_11_12_bc/assembled/-merged.assembled_1000.fastq",
+                              '--workers',
+                              '6',
+                              '--save_path',
+                              '/home/anton/BigMac/skoltech/CRISPR_research/data/cdif_11_12_bc/bc_res'])
 
-    # filename = "/home/anton/BigMac/skoltech/CRISPR_research/data/cdif_11_12_bc/assembled/-merged.assembled.fastq"
-    # reads_bc_path = None
-    # tag = 'cdif'
-    # workers = 6
+    if args.bacteria_type == 'c':
+        default_repeat = ca.redundant
+    elif args.bacteria_type == 'e':
+        default_repeat = ca.ecoli_r2
 
-    if args.reads_bc_path is None:
-        reads, quals = ca.read_fastq(args.filename)
-        if DEBUG: print(len(reads))
 
-        def process_batch_mp(batch):
-            return process_batch(batch, p_cut)
+    reads, quals = ca.read_fastq(args.filename)
+    if DEBUG: print(len(reads))
 
-        reads_batches = [reads[idxs[0]: idxs[1]] for idxs in get_splits(len(reads), args.workers)]
+    def process_read(read):
+        bc, read_cut, read, inv = extract_read_bc(read, p_cut, search_rc=1)
+        if bc != -1:
+            spacers, qualities, inv_split = ca.split_read(read_cut, default_repeat)
+            if spacers[0] != -1 and spacers[1] != -1 and len(spacers[0]) > 0:
+                return bc, spacers, inv, inv_split
+        return -1, [-1,-1], -1, -1
 
-        if DEBUG: print([len(x) for x in reads_batches])
+    reads_bc = mp_imap(process_read, reads, args.workers)
 
-        reads_bc_list = mp_map(process_batch_mp, reads_batches, args.workers)
+    if DEBUG: print(len(reads_bc))
 
-        reads_bc = {}
-        for reads_bc_batch in reads_bc_list:
-            for k,v in reads_bc_batch.items():
-                if k in reads_bc:
-                    reads_bc[k] += v
-                else:
-                    reads_bc[k] = v
+    reads_bc = [x for x in reads_bc if x[0] != -1]
 
-    else:
-        reads_bc = pickle.load(open(args.filename, 'rb'))
+    if DEBUG: print(len(reads_bc))
+    if DEBUG: print(reads_bc)
 
-    # pickle.dump(reads_bc, open(args.save_path + "/reads_bc", 'wb'))
+    pickle.dump(reads_bc, open(args.save_path + "/reads_bc", 'wb'))
     #
     #
     # reads_bc_list = []

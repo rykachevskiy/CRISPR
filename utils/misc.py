@@ -46,6 +46,14 @@ def mp_map(func, l, workers=1):
         return list(p.map(func, l))
 
 
+def mp_imap(func, l, workers=1):
+    if workers == 1:
+        return list(tqdm(map(func, l)))
+    else:
+        p = Pool(workers)
+        return list(tqdm(p.imap_unordered(func, l)))
+
+
 def get_splits(max_idx, n_splits):
     splits = []
     spl = np.linspace(0, max_idx, n_splits + 1, dtype=int)
