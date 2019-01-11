@@ -33,13 +33,13 @@ if __name__ == '__main__':
     parser.add_argument('--save_path', dest='save_path')
     parser.add_argument('--b_type', dest='bacteria_type', default='c')
 
-    #args = parser.parse_args()
-    args = parser.parse_args(['--fn',
-                              "/home/anton/BigMac/skoltech/CRISPR_research/data/cdif_11_12_bc/assembled/-merged.assembled_1000.fastq",
-                              '--workers',
-                              '6',
-                              '--save_path',
-                              '/home/anton/BigMac/skoltech/CRISPR_research/data/cdif_11_12_bc/bc_res'])
+    args = parser.parse_args()
+    # args = parser.parse_args(['--fn',
+    #                           "/home/anton/BigMac/skoltech/CRISPR_research/data/cdif_11_12_bc/assembled/-merged.assembled_1000.fastq",
+    #                           '--workers',
+    #                           '6',
+    #                           '--save_path',
+    #                           '/home/anton/BigMac/skoltech/CRISPR_research/data/cdif_11_12_bc/bc_res'])
 
     if args.bacteria_type == 'c':
         default_repeat = ca.redundant
