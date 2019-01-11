@@ -1,10 +1,6 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from tqdm import tqdm
 import sys
 import os
 
-from importlib import reload
 import regex as re
 import pickle
 import argparse
@@ -74,26 +70,6 @@ if __name__ == '__main__':
         os.makedirs(args.save_path)
 
     pickle.dump(reads_bc, open(args.save_path + "/reads_bc", 'wb'))
-    #
-    #
-    # reads_bc_list = []
-    # for k,v in reads_bc.items():
-    #     reads_bc_list.append((k, v))
-    #
-    #
-    # reads_splited = []
-    # for k, v in tqdm(reads_bc_list):
-    #     reads_splited.append((k, ca.split_read(v[0], ca.redundant)[0]))
 
-
-    # reads_splited = {}
-    # for k, v in tqdm(reads_bc.items()):
-    #     reads_splited[k] = ca.split_read(v[0], ca.redundant)[0]
-    #
-    # pickle.dump(reads_splited, open(args.save_path + "/reads_splited", 'wb'))
-    #
-    # reads_splited_list = []
-    # for k,v in reads_splited.items():
-    #
 
 
